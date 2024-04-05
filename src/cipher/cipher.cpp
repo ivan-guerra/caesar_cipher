@@ -18,6 +18,7 @@ void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) noexcept {
     curr = static_cast<char>((static_cast<int>(curr) + shift) % kAlphabetSize);
     os << curr;
   }
+  os.flush(); /* Flush the output stream just to be safe. */
 }
 
 }  // namespace cipher
