@@ -18,6 +18,7 @@ Main()
 
     pushd "$CC_BUILD_DIR" > /dev/null || exit 1
     cmake ../ \
+        -DBUILD_DOCS=ON \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
         -DCMAKE_INSTALL_PREFIX="$CC_BIN_DIR" \
         -DCMAKE_BUILD_TYPE="$BUILD_TYPE" && \

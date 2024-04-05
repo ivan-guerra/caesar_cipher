@@ -26,5 +26,6 @@ add_link_options("$<$<CONFIG:Debug>:-fsanitize=address>")
 add_compile_options("$<$<CONFIG:Release>:${RELEASE_FLAGS}>"
                     "$<$<CONFIG:Debug>:${DEBUG_FLAGS}>")
 
+add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(apps)
