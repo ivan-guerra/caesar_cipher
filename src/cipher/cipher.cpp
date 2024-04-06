@@ -15,7 +15,7 @@ void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) noexcept {
 
   char curr = '\0';
   while (is.get(curr)) {
-    curr = static_cast<char>((static_cast<int>(curr) + shift) % kAlphabetSize);
+    curr = (static_cast<int>(curr) + shift) % kAlphabetSize;
     os << curr;
   }
   os.flush(); /* Flush the output stream just to be safe. */
