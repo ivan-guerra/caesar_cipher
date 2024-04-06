@@ -1,35 +1,46 @@
 #!/bin/bash
 
-# Script usage: ./build.sh [RELEASE|DEBUG]
-
 source config.sh
+
+Help()
+{
+    echo "build caesar cipher tools"
+    echo "usage: build.sh [OPTION]..."
+    echo "options:"
+    echo -e "\t-g    enable debug info"
+    echo -e "\t-d    build doxygen docs"
+    echo -e "\t-h    print this help message"
+}
 
 Main()
 {
     # Create the build directory if it does not already exist.
     mkdir -pv "$CC_BUILD_DIR"
 
-    # Set the build type according to the first program arg if any. Default is release.
+    # Set the build type according to the first program arg if any. Default is
+    # release.
     BUILD_TYPE="RELEASE"
-    if [ -n  "$1" ]
-    then
-        BUILD_TYPE=$1
-    fi
+    BUILD_DOCS="OFF"
+    while getopts ":hgd" flag
+    do
+        case "$flag" in
+            g) BUILD_TYPE="DEBUG" ;;
+            d) BUILD_DOCS="ON" ;;
+            h) Help
+                exit 0 ;;
+            \?) echo "error: invalid option '$OPTARG'"
+                exit 1 ;;
+        esac
+    done
 
     pushd "$CC_BUILD_DIR" > /dev/null || exit 1
     cmake ../ \
-        -DBUILD_DOCS=ON \
+        -DBUILD_DOCS="$BUILD_DOCS" \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
         -DCMAKE_INSTALL_PREFIX="$CC_BIN_DIR" \
         -DCMAKE_BUILD_TYPE="$BUILD_TYPE" && \
         make -j"$(nproc)" all && \
         make install
-
-    # Exit if any of the above commands fails.
-    if [ $? -ne 0 ];
-    then
-        exit 1
-    fi
     popd > /dev/null || exit 1
 }
 
