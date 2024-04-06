@@ -5,6 +5,8 @@
 
 namespace cipher {
 
+static constexpr int kAsciiAlphabetSize = 128; /**< Number of ASCII chars. */
+
 /**
  * \brief Apply a Caesar Cipher to an ASCII text stream.
  * \details A Caesar Cipher with a shift of \p shift is applied to the ASCII
