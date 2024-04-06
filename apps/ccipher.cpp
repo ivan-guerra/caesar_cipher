@@ -11,10 +11,10 @@
 static void PrintUsage() noexcept {
   std::cout << "usage: ccipher --key KEY [OPTION]..." << std::endl;
   std::cout << "encrypt/decrypt ASCII text via Caesar Cipher" << std::endl;
-  std::cout << "\t-k, --key\tcipher key (REQUIRED)" << std::endl;
-  std::cout << "\t-i, --infile\tinput file path" << std::endl;
-  std::cout << "\t-o, --outfile\toutput file path" << std::endl;
-  std::cout << "\t-h, --help\tprint this help page" << std::endl;
+  std::cout << "\t-k, --key KEY\n\t\tcipher key (REQUIRED)" << std::endl;
+  std::cout << "\t-i, --infile FILE\n\t\tinput file path" << std::endl;
+  std::cout << "\t-o, --outfile FILE\n\t\toutput file path" << std::endl;
+  std::cout << "\t-h, --help\n\t\tprint this help page" << std::endl;
 }
 
 static void PrintErrorAndExit(const std::string &msg) noexcept {
