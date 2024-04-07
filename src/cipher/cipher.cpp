@@ -4,7 +4,7 @@
 
 namespace cipher {
 
-void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) noexcept {
+void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) {
   /* Negative shifts get adjusted to be positive. The ciphertext winds up being
    * the same as if we had directly applied the negative shift. */
   if (shift < 0) {

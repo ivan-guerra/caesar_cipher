@@ -16,7 +16,7 @@ static constexpr int kAsciiAlphabetSize = 128; /**< Number of ASCII chars. */
  * \param [in,out] os ASCII output stream containing ciphered text.
  * \param [in] shift The Caesar Cipher shift (i.e., key) value.
  */
-void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) noexcept;
+void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift);
 
 }  // namespace cipher
 
