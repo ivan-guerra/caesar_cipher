@@ -44,4 +44,4 @@ Main()
     popd > /dev/null || exit 1
 }
 
-Main "$1"
+Main "$@"
