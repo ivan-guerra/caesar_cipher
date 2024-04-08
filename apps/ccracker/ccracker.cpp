@@ -115,9 +115,9 @@ int main(int argc, char **argv) {
   /* Only perform a dictionary attack if explicitly told to do so. Otherwise,
    * perform a frequency analysis attack. */
   if (!dict_file.empty()) {
-    DoDictAttack(cipher_is, dict_file);
+    DoDictAttack(input_is, dict_file);
   } else {
-    DoFreqAttack(cipher_is);
+    DoFreqAttack(input_is);
   }
 
   std::exit(EXIT_SUCCESS);
