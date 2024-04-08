@@ -186,24 +186,23 @@ using CharFrequencyArray =
 KeyScoreMap AsciiDictionaryAttack(std::istream& is, std::istream& dict_is) {
   WordSet dictionary = LoadDictionary(dict_is);
   KeyScoreMap scores;
+  char curr = '\0';
   char tmp = '\0';
   std::string words[cipher::kAsciiAlphabetSize];
   std::string line;
-  while (std::getline(is, line)) {
-    for (const char& curr : line) {
-      for (int shift = 0; shift < cipher::kAsciiAlphabetSize; ++shift) {
-        /* Perform the Caesar Cipher shift. */
-        tmp = (static_cast<int>(curr) + shift) % cipher::kAsciiAlphabetSize;
+  while (is.get(curr)) {
+    for (int shift = 0; shift < cipher::kAsciiAlphabetSize; ++shift) {
+      /* Perform the Caesar Cipher shift. */
+      tmp = (static_cast<int>(curr) + shift) % cipher::kAsciiAlphabetSize;
 
-        if (std::isalnum(tmp)) { /* Add a char to the word at this shift. */
-          words[shift] += std::tolower(tmp);
-        } else if (!words[shift].empty() &&
-                   std::isspace(tmp)) { /* Found complete word. */
-          if (dictionary.count(words[shift])) {
-            scores[shift]++;
-          }
-          words[shift].clear();
+      if (std::isalnum(tmp)) { /* Add a char to the word at this shift. */
+        words[shift] += std::tolower(tmp);
+      } else if (!words[shift].empty() &&
+                 std::isspace(tmp)) { /* Found complete word. */
+        if (dictionary.count(words[shift])) {
+          scores[shift]++;
         }
+        words[shift].clear();
       }
     }
   }
