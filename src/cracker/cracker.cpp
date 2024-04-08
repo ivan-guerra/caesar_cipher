@@ -25,8 +25,7 @@ using CharFrequencyArray =
   return dictionary;
 }
 
-[[nodiscard]] static double ManhattanDist(
-    const CharFrequencies& observed) noexcept {
+[[nodiscard]] static double ManhattanDist(const CharFrequencies& observed) {
   /* Source Material: tinyurl.com/4b6hdzh8 */
   static const CharFrequencies kAsciiFreqDistro = {
       0.0,
@@ -167,7 +166,7 @@ using CharFrequencyArray =
 }
 
 [[nodiscard]] static KeyScoreMap FindMinDistShifts(
-    const CharFrequencyArray& freqs) noexcept {
+    const CharFrequencyArray& freqs) {
   KeyScoreMap scores;
   double dist = 0.0;
   double min_dist = std::numeric_limits<double>::max();

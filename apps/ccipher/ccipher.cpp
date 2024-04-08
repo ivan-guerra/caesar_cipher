@@ -8,7 +8,7 @@
 
 #include "cipher/cipher.h"
 
-static void PrintUsage() noexcept {
+static void PrintUsage() {
   std::cout << "usage: ccipher --key KEY [OPTION]..." << std::endl;
   std::cout << "encrypt/decrypt ASCII text via Caesar Cipher" << std::endl;
   std::cout << "\t-k, --key KEY\n\t\tcipher key (REQUIRED)" << std::endl;
@@ -17,7 +17,7 @@ static void PrintUsage() noexcept {
   std::cout << "\t-h, --help\n\t\tprint this help page" << std::endl;
 }
 
-static void PrintErrorAndExit(const std::string &msg) noexcept {
+static void PrintErrorAndExit(const std::string &msg) {
   std::cerr << "error: " << msg << std::endl;
   std::exit(EXIT_FAILURE);
 }

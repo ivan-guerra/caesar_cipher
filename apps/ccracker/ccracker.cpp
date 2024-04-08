@@ -8,7 +8,7 @@
 
 #include "cracker/cracker.h"
 
-static void PrintUsage() noexcept {
+static void PrintUsage() {
   std::cout << "usage: ccracker [OPTION]..." << std::endl;
   std::cout << "find the key(s) with the highest probability of deciphering "
                "the ciphertext"
@@ -22,13 +22,13 @@ static void PrintUsage() noexcept {
   std::cout << "\t-h, --help\n\t\tprint this help page" << std::endl;
 }
 
-static void PrintErrorAndExit(const std::string &msg) noexcept {
+static void PrintErrorAndExit(const std::string &msg) {
   std::cerr << "error: " << msg << std::endl;
   std::exit(EXIT_FAILURE);
 }
 
 [[nodiscard]] static std::vector<int> FindKeys(
-    const cracker::KeyScoreMap &scores) noexcept {
+    const cracker::KeyScoreMap &scores) {
   int max_score = 0;
   std::vector<int> keys;
   for (const auto &[shift, score] : scores) {
@@ -43,7 +43,7 @@ static void PrintErrorAndExit(const std::string &msg) noexcept {
   return keys;
 }
 
-static void PrintProbableKeys(const cracker::KeyScoreMap &scores) noexcept {
+static void PrintProbableKeys(const cracker::KeyScoreMap &scores) {
   std::vector<int> keys = FindKeys(scores);
   if (keys.empty()) {
     std::cout << "no viable key found" << std::endl;
