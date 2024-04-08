@@ -9,11 +9,15 @@
 #include "cracker/cracker.h"
 
 static void PrintUsage() noexcept {
-  std::cout << "usage: ccracker [OPTION]... DICT_PATH" << std::endl;
+  std::cout << "usage: ccracker [OPTION]..." << std::endl;
   std::cout << "find the key(s) with the highest probability of deciphering "
                "the ciphertext"
             << std::endl;
   std::cout << "\t-c, --ciphertext FILE\n\t\tfile containing ciphertext"
+            << std::endl;
+  std::cout << "\t-d, --dict-attack DICT_FILE\n\t\tperform a dictionary attack"
+            << std::endl;
+  std::cout << "\t-f, --freq-attack\n\t\tperform a frequency analysis attack"
             << std::endl;
   std::cout << "\t-h, --help\n\t\tprint this help page" << std::endl;
 }
@@ -52,21 +56,43 @@ static void PrintProbableKeys(const cracker::KeyScoreMap &scores) noexcept {
   }
 }
 
+static void DoDictAttack(std::istream &is, const std::string &dict_file) {
+  std::ifstream dict_is(dict_file);
+  if (!dict_is.good()) {
+    PrintErrorAndExit(
+        "unable to open dictionary file, verify you gave a valid path");
+  }
+  PrintProbableKeys(cracker::AsciiDictionaryAttack(is, dict_is));
+}
+
+static void DoFreqAttack(std::istream &is) {
+  PrintProbableKeys(cracker::AsciiFrequencyAnalysisAttack(is));
+}
+
 int main(int argc, char **argv) {
   std::vector<struct option> longopts{
       {"ciphertext", required_argument, 0, 'c'},
+      {"dict-attack", required_argument, 0, 'd'},
+      {"freq-attack", no_argument, 0, 'f'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0},
   };
 
   int opt = 0;
   int long_index = 0;
-  std::string ciphertext;
-  while (-1 !=
-         (opt = ::getopt_long(argc, argv, "c:h", &longopts[0], &long_index))) {
+  std::string ciphertext, dict_file;
+  bool do_freq_attack = false;
+  while (-1 != (opt = ::getopt_long(argc, argv, "c:d:fh", &longopts[0],
+                                    &long_index))) {
     switch (opt) {
       case 'c':
         ciphertext = optarg;
+        break;
+      case 'd':
+        dict_file = optarg;
+        break;
+      case 'f':
+        do_freq_attack = true;
         break;
       case 'h':
         PrintUsage();
@@ -76,13 +102,8 @@ int main(int argc, char **argv) {
     }
   }
 
-  if (!argv[optind]) {
-    PrintErrorAndExit("missing dictionary file path");
-  }
-  std::ifstream dict_is(argv[optind]);
-  if (!dict_is.good()) {
-    PrintErrorAndExit(
-        "unable to open dictionary file, verify you gave a valid path");
+  if (!dict_file.empty() && do_freq_attack) {
+    PrintErrorAndExit("you can only specify one attack algorithm per run");
   }
 
   std::ifstream cipher_is(ciphertext);
@@ -91,10 +112,13 @@ int main(int argc, char **argv) {
     PrintErrorAndExit("unable to open ciphertext file \"" + ciphertext + "\"");
   }
 
-  cracker::KeyScoreMap scores =
-      cracker::AsciiDictionaryAttack(input_is, dict_is);
-
-  PrintProbableKeys(scores);
+  /* Only perform a dictionary attack if explicitly told to do so. Otherwise,
+   * perform a frequency analysis attack. */
+  if (!dict_file.empty()) {
+    DoDictAttack(cipher_is, dict_file);
+  } else {
+    DoFreqAttack(cipher_is);
+  }
 
   std::exit(EXIT_SUCCESS);
 }
