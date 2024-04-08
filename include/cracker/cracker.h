@@ -10,10 +10,10 @@ using KeyScoreMap = std::unordered_map<int, int>;
 
 /**
  * \brief Perform a dictionary attack on the Caesar Cipher stream \p is.
- * \param [in,out] is An ASCII input stream containing ciphertext generated
- *                    by a Caesar Cipher.
- * \param [in,out] dict_is An input stream containing a newline separated list
- *                         of words.
+ * \param [in] is An ASCII input stream containing ciphertext generated
+ *                by a Caesar Cipher.
+ * \param [out] dict_is An input stream containing a newline separated list
+ *                      of words.
  * \return A #KeyScoreMap whose keys represent Caesar Cipher keys and whose
  *         values represent the number of dictionary words detected when
  *         applying the key to the ciphertext stream \p is. The higher the
@@ -24,8 +24,8 @@ using KeyScoreMap = std::unordered_map<int, int>;
 
 /**
  * \brief Perform a frequency analysis attack on the Caesar Cipher stream \p is.
- * \param [in,out] is An ASCII input stream containing ciphertext generated
- *                    by a Caesar Cipher.
+ * \param [in] is An ASCII input stream containing ciphertext generated
+ *                by a Caesar Cipher.
  * \return A #KeyScoreMap whose keys represent Caesar Cipher keys. The map's
  *         values can only be 0 or 1. If 1, the character frequency
  *         distribution most closely matches the theoretical ASCII character
