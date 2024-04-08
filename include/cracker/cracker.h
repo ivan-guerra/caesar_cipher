@@ -22,6 +22,18 @@ using KeyScoreMap = std::unordered_map<int, int>;
 [[nodiscard]] KeyScoreMap AsciiDictionaryAttack(std::istream& is,
                                                 std::istream& dict_is);
 
+/**
+ * \brief Perform a frequency analysis attack on the Caesar Cipher stream \p is.
+ * \param [in,out] is An ASCII input stream containing ciphertext generated
+ *                    by a Caesar Cipher.
+ * \return A #KeyScoreMap whose keys represent Caesar Cipher keys. The map's
+ *         values can only be 0 or 1. If 1, the character frequency
+ *         distribution most closely matches the theoretical ASCII character
+ *         frequency distribution indicating the assoicated shift value is
+ *         the key.
+ */
+[[nodiscard]] KeyScoreMap AsciiFrequencyAnalysisAttack(std::istream& is);
+
 }  // namespace cracker
 
 #endif
