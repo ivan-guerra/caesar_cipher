@@ -73,7 +73,16 @@ int main(int argc, char **argv) {
     PrintErrorAndExit("unable to open outfile \"" + outfile + "\"");
   }
 
-  cipher::AsciiCaesarCipher(is, os, key);
-
+  cipher::RetCode rc = cipher::AsciiCaesarCipher(is, os, key);
+  switch (rc) {
+    case cipher::RetCode::kSuccess:
+      break;
+    case cipher::RetCode::kBadInputStream:
+      PrintErrorAndExit("bad input stream");
+      break;
+    case cipher::RetCode::kBadOutputStream:
+      PrintErrorAndExit("bad output stream");
+      break;
+  }
   std::exit(EXIT_SUCCESS);
 }

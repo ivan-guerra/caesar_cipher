@@ -4,7 +4,14 @@
 
 namespace cipher {
 
-void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) {
+RetCode AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) {
+  if (!is) {
+    return RetCode::kBadInputStream;
+  }
+  if (!os) {
+    return RetCode::kBadOutputStream;
+  }
+
   /* Negative shifts get adjusted to be positive. The ciphertext winds up being
    * the same as if we had directly applied the negative shift. */
   if (shift < 0) {
@@ -17,6 +24,8 @@ void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift) {
     os << curr;
   }
   os.flush(); /* Flush the output stream just to be safe. */
+
+  return RetCode::kSuccess;
 }
 
 }  // namespace cipher

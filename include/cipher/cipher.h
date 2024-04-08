@@ -7,6 +7,12 @@ namespace cipher {
 
 static constexpr int kAsciiAlphabetSize = 128; /**< Number of ASCII chars. */
 
+enum class RetCode {
+  kSuccess,
+  kBadInputStream,
+  kBadOutputStream,
+};
+
 /**
  * \brief Apply a Caesar Cipher to an ASCII text stream.
  * \details A Caesar Cipher with a shift of \p shift is applied to the ASCII
@@ -15,8 +21,10 @@ static constexpr int kAsciiAlphabetSize = 128; /**< Number of ASCII chars. */
  * \param [in,out] is ASCII input stream.
  * \param [in,out] os ASCII output stream containing ciphered text.
  * \param [in] shift The Caesar Cipher shift (i.e., key) value.
+ * \return A #RetCode indicating cipher success/failure.
  */
-void AsciiCaesarCipher(std::istream &is, std::ostream &os, int shift);
+[[nodiscard]] RetCode AsciiCaesarCipher(std::istream &is, std::ostream &os,
+                                        int shift);
 
 }  // namespace cipher
 
