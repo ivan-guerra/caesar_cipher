@@ -8,10 +8,10 @@
 static const int kExpectedKey = 27;
 
 static const char* kDictionaryFile = "../dictionaries/popular.txt";
-static const char* kEmptyFile = "data/cracker/empty.txt";
-static const char* kSingleWordCipherFile = "data/cracker/single_word.txt";
-static const char* kMultiwordCipherFile = "data/cracker/multiline.txt";
-static const char* kMultilineCipherFile = "data/cracker/multiword.txt";
+static const char* kEmptyFile = "data/empty.txt";
+static const char* kSingleWordCipherFile = "data/single_word_ciphertext.txt";
+static const char* kMultiwordCipherFile = "data/multiword_ciphertext.txt";
+static const char* kMultilineCipherFile = "data/multiline_ciphertext.txt";
 
 static void TestFrequencyAnalysisAttack(const std::string& ciphertext_file,
                                         int expected_key) {
@@ -101,11 +101,11 @@ TEST(CrackerTest, AsciiFreqAttackFindsKeyForSingleWordInput) {
   TestFrequencyAnalysisAttack(kSingleWordCipherFile, kExpectedKey);
 }
 
-TEST(CrackerTest, AsciiFreqAttackFindsKeyForMultiWordInput) {
+TEST(CrackerTest, AsciiFreqAttackFindsKeyForMultiwordInput) {
   TestFrequencyAnalysisAttack(kMultiwordCipherFile, kExpectedKey);
 }
 
-TEST(CrackerTest, AsciiFreqAttackFindsKeyForMultiLineInput) {
+TEST(CrackerTest, AsciiFreqAttackFindsKeyForMultilineInput) {
   TestFrequencyAnalysisAttack(kMultilineCipherFile, kExpectedKey);
 }
 
@@ -113,10 +113,10 @@ TEST(CrackerTest, AsciiDictAttackFindsKeyForSingleWordInput) {
   TestDictionaryAttack(kSingleWordCipherFile, kExpectedKey);
 }
 
-TEST(CrackerTest, AsciiDictAttackFindsKeyForMultiWordInput) {
+TEST(CrackerTest, AsciiDictAttackFindsKeyForMultiwordInput) {
   TestDictionaryAttack(kMultiwordCipherFile, kExpectedKey);
 }
 
-TEST(CrackerTest, AsciiDictAttackFindsKeyForMultiLineInput) {
+TEST(CrackerTest, AsciiDictAttackFindsKeyForMultilineInput) {
   TestDictionaryAttack(kMultilineCipherFile, kExpectedKey);
 }
