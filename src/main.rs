@@ -4,7 +4,7 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    #[arg(help = "cipher encryption/decryption key")]
+    #[arg(help = "encryption/decryption key")]
     key: i32,
 
     #[arg(short = 'i', long, help = "input plaintext/ciphertext file")]

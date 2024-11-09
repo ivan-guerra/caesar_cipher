@@ -1,10 +1,57 @@
+//! A Caesar cipher implementation for ASCII characters.
+//!
+//! This module provides functionality to encrypt and decrypt text using the Caesar cipher,
+//! which is a substitution cipher that shifts characters by a fixed number of positions
+//! in the ASCII character set (0-127).
+//!
+//! # Examples
+//!
+//! ```rust
+//! use caesar_cipher::CaesarCipher;
+//!
+//! let text = "Hello, World!";
+//! let shift = 3;
+//!
+//! let encrypt = CaesarCipher::new(shift);
+//! let encrypted = encrypt.apply_cipher(text);
+//!
+//! let decrypt = CaesarCipher::new(-shift);
+//! let decrypted = decrypt.apply_cipher(&encrypted);
+//!
+//! assert_eq!(text, decrypted);
+//! ```
+//!
+//! # Note
+//!
+//! This implementation:
+//! * Works with all ASCII characters (0-127)
+//! * Performs wrapping within the ASCII range
+//! * Preserves the original character properties
+//! * Applies consistent shifting across the entire ASCII range
 use std::fs::File;
 use std::io::{self, Read, Write};
 use std::path::PathBuf;
 
+/// Configuration structure for the Caesar cipher program.
+///
+/// # Examples
+///
+/// ```
+/// use caesar_cipher::{Config, CaesarCipher};
+/// use std::path::PathBuf;
+///
+/// let config = Config {
+///     input_file: Some(PathBuf::from("input.txt")),
+///     output_file: Some(PathBuf::from("output.txt")),
+///     cipher: CaesarCipher::new(3),
+/// };
+/// ```
 pub struct Config {
+    /// Optional input file path. When None, input is read from standard input (stdin).
     pub input_file: Option<std::path::PathBuf>,
+    /// Optional output file path. When None, output is written to standard output (stdout).
     pub output_file: Option<std::path::PathBuf>,
+    /// Caesar cipher configuration containing the shift value for character transformation.
     pub cipher: CaesarCipher,
 }
 
@@ -22,15 +69,52 @@ impl Config {
     }
 }
 
+/// A Caesar cipher implementation for ASCII characters.
+///
+/// # Examples
+///
+/// ```
+/// use caesar_cipher::CaesarCipher;
+///
+/// let cipher = CaesarCipher { shift: 3 };
+/// assert_eq!(cipher.apply_cipher("Hello!"), "Khoor$");
+/// ```
 pub struct CaesarCipher {
-    shift: i32,
+    /// The number of positions to shift characters in the cipher.
+    ///
+    /// Positive values shift characters forward in the ASCII range (0-127),
+    /// while negative values shift characters backward. The shift wraps around
+    /// within the ASCII range.
+    pub shift: i32,
 }
 
 impl CaesarCipher {
+    /// Creates a new CaesarCipher instance with the specified shift value.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use caesar_cipher::CaesarCipher;
+    ///
+    /// let cipher = CaesarCipher::new(3);
+    /// ```
     pub fn new(shift: i32) -> Self {
         CaesarCipher { shift }
     }
 
+    /// Applies the Caesar cipher transformation to the input text.
+    ///
+    /// Takes a string slice and shifts each character by the configured shift value,
+    /// wrapping around within the ASCII range (0-127).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use caesar_cipher::CaesarCipher;
+    ///
+    /// let cipher = CaesarCipher::new(3);
+    /// assert_eq!(cipher.apply_cipher("ABC"), "DEF");
+    /// ```
     pub fn apply_cipher(&self, text: &str) -> String {
         text.chars()
             .map(|c| self.shift_char(c, self.shift))
@@ -80,6 +164,17 @@ fn write_output(output_file: &Option<PathBuf>, content: &str) -> io::Result<()> 
     }
 }
 
+/// Executes the cipher operation based on the provided configuration.
+///
+/// # Returns
+///
+/// `Ok(())` on success, or an error if file operations fail.
+///
+/// # Errors
+///
+/// This function will return an error if:
+/// * The input file cannot be read
+/// * The output file cannot be written
 pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let input = read_input(&config.input_file)?;
     let output = config.cipher.apply_cipher(&input);
