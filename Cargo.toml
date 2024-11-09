@@ -1,0 +1,12 @@
+[package]
+name = "caesar_cipher"
+version = "0.1.0"
+edition = "2021"
+description = "Caesar Cipher encryption and cracking utilities."
+license = "Unlicense"
+
+[[bin]]
+name = "ccipher"
+path = "src/main.rs"
+
+[dependencies]
