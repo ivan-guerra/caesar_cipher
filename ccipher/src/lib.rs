@@ -7,7 +7,7 @@
 //! # Examples
 //!
 //! ```rust
-//! use caesar_cipher::CaesarCipher;
+//! use ccipher::CaesarCipher;
 //!
 //! let text = "Hello, World!";
 //! let shift = 3;
@@ -37,7 +37,7 @@ use std::path::PathBuf;
 /// # Examples
 ///
 /// ```
-/// use caesar_cipher::{Config, CaesarCipher};
+/// use ccipher::{Config, CaesarCipher};
 /// use std::path::PathBuf;
 ///
 /// let config = Config {
@@ -74,7 +74,7 @@ impl Config {
 /// # Examples
 ///
 /// ```
-/// use caesar_cipher::CaesarCipher;
+/// use ccipher::CaesarCipher;
 ///
 /// let cipher = CaesarCipher { shift: 3 };
 /// assert_eq!(cipher.apply_cipher("Hello!"), "Khoor$");
@@ -94,7 +94,7 @@ impl CaesarCipher {
     /// # Examples
     ///
     /// ```
-    /// use caesar_cipher::CaesarCipher;
+    /// use ccipher::CaesarCipher;
     ///
     /// let cipher = CaesarCipher::new(3);
     /// ```
@@ -110,7 +110,7 @@ impl CaesarCipher {
     /// # Examples
     ///
     /// ```
-    /// use caesar_cipher::CaesarCipher;
+    /// use ccipher::CaesarCipher;
     ///
     /// let cipher = CaesarCipher::new(3);
     /// assert_eq!(cipher.apply_cipher("ABC"), "DEF");

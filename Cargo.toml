@@ -1,14 +1,6 @@
-[package]
-name = "caesar_cipher"
-version = "0.1.0"
-edition = "2021"
-description = "Caesar Cipher encryption/decryption utility."
-license = "Unlicense"
-
-[[bin]]
-name = "ccipher"
-path = "src/main.rs"
-
-[dependencies]
-clap = {version = "4.5.20", features = ["derive"]}
-testdir = "0.9.1"
+[workspace]
+members = [
+  "ccipher", 
+  "ccracker",
+]
+resolver = "2"

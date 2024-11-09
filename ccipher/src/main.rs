@@ -1,4 +1,3 @@
-use caesar_cipher::Config;
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -16,9 +15,9 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    let config = Config::new(args.key, args.input_file, args.output_file);
+    let config = ccipher::Config::new(args.key, args.input_file, args.output_file);
 
-    if let Err(e) = caesar_cipher::run(&config) {
+    if let Err(e) = ccipher::run(&config) {
         eprintln!("error: {}", e);
         std::process::exit(1);
     }
