@@ -1,0 +1,9 @@
+[package]
+name = "ccipher_io"
+version = "0.1.0"
+edition = "2021"
+description = "Caesar cipher IO utilities."
+publish = false
+
+[dependencies]
+testdir = "0.9.1"

@@ -7,4 +7,4 @@ license = "Unlicense"
 
 [dependencies]
 clap = {version = "4.5.20", features = ["derive"]}
-testdir = "0.9.1"
+ccipher_io = { path = "../ccipher_io" }

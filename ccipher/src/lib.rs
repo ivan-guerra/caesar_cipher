@@ -28,9 +28,6 @@
 //! * Performs wrapping within the ASCII range
 //! * Preserves the original character properties
 //! * Applies consistent shifting across the entire ASCII range
-use std::fs::File;
-use std::io::{self, Read, Write};
-use std::path::PathBuf;
 
 /// Configuration structure for the Caesar cipher program.
 ///
@@ -134,36 +131,6 @@ impl CaesarCipher {
     }
 }
 
-fn read_input(input_file: &Option<PathBuf>) -> io::Result<String> {
-    match input_file {
-        Some(path) => {
-            let mut file = File::open(path)?;
-            let mut content = String::new();
-            file.read_to_string(&mut content)?;
-            Ok(content)
-        }
-        None => {
-            let mut content = String::new();
-            io::stdin().read_to_string(&mut content)?;
-            Ok(content)
-        }
-    }
-}
-
-fn write_output(output_file: &Option<PathBuf>, content: &str) -> io::Result<()> {
-    match output_file {
-        Some(path) => {
-            let mut file = File::create(path)?;
-            file.write_all(content.as_bytes())?;
-            Ok(())
-        }
-        None => {
-            io::stdout().write_all(content.as_bytes())?;
-            Ok(())
-        }
-    }
-}
-
 /// Executes the cipher operation based on the provided configuration.
 ///
 /// # Returns
@@ -176,9 +143,9 @@ fn write_output(output_file: &Option<PathBuf>, content: &str) -> io::Result<()> 
 /// * The input file cannot be read
 /// * The output file cannot be written
 pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
-    let input = read_input(&config.input_file)?;
+    let input = ccipher_io::read_input(&config.input_file)?;
     let output = config.cipher.apply_cipher(&input);
-    write_output(&config.output_file, &output)?;
+    ccipher_io::write_output(&config.output_file, &output)?;
 
     Ok(())
 }
@@ -186,9 +153,6 @@ pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs;
-    use std::io;
-    use testdir::testdir;
 
     #[test]
     fn apply_cipher_returns_correct_text_on_single_shift() {
@@ -249,48 +213,5 @@ mod tests {
         let cipher = CaesarCipher::new(-1);
         assert_eq!(cipher.apply_cipher("ABC"), "@AB");
         assert_eq!(cipher.apply_cipher("\x01"), "\x00");
-    }
-
-    #[test]
-    fn read_input_from_existing_file_returns_ok() -> io::Result<()> {
-        let dir = testdir!();
-        let input_path = dir.join("input.txt");
-        let content = "Hello\n123\n!@#";
-        fs::write(&input_path, content)?;
-
-        let result = read_input(&Some(input_path))?;
-        assert_eq!(result, content);
-        Ok(())
-    }
-
-    #[test]
-    fn read_input_from_nonexisting_file_returns_error() {
-        let dir = testdir!();
-        let nonexistent = dir.join("nonexistent.txt");
-
-        let result = read_input(&Some(nonexistent));
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn write_output_to_file_returns_ok() -> io::Result<()> {
-        let dir = testdir!();
-        let output_path = dir.join("output.txt");
-        let content = "Hello\x01\x02\x03!@#";
-
-        write_output(&Some(output_path.clone()), content)?;
-
-        let written_content = fs::read_to_string(output_path)?;
-        assert_eq!(written_content, content);
-        Ok(())
-    }
-
-    #[test]
-    fn write_output_to_invalid_path_returns_error() {
-        let invalid_path = PathBuf::from("/nonexistent/directory/file.txt");
-        let content = "Test content";
-
-        let result = write_output(&Some(invalid_path), content);
-        assert!(result.is_err());
     }
 }

@@ -134,7 +134,14 @@ dependencies = [
 name = "ccipher"
 version = "0.1.0"
 dependencies = [
+ "ccipher_io",
  "clap",
+]
+
+[[package]]
+name = "ccipher_io"
+version = "0.1.0"
+dependencies = [
  "testdir",
 ]
 
