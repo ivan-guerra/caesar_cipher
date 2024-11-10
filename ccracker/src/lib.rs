@@ -1,3 +1,34 @@
+//! A Caesar cipher cracking library that implements dictionary and frequency analysis attacks.
+//!
+//! # Overview
+//!
+//! This module provides functionality to automatically determine the shift key of a Caesar cipher
+//! encrypted text. It supports two methods of analysis:
+//!
+//! * Dictionary-based attack - Attempts to find the key by matching decrypted words against a
+//!   dictionary of common English words.
+//! * Frequency analysis - Uses character frequency distribution comparison against typical
+//!   English text patterns.
+//!
+//! # Usage
+//!
+//! ```
+//! use ccracker::{Config, Attack};
+//! use std::path::PathBuf;
+//!
+//! let config = Config {
+//!     ciphertext_file: Some(PathBuf::from("encrypted.txt")),
+//!     attack_type: Attack::Dictionary,
+//! };
+//!
+//! if let Ok(()) = ccracker::run(&config) {
+//!     println!("Analysis complete!");
+//! }
+//! ```
+//!
+//! The library will output either a candidate key value or indicate that no viable key
+//! was found. The discovered key can then be used with a Caesar cipher implementation
+//! to decrypt the original message.
 use clap::ValueEnum;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -5,18 +36,27 @@ use std::collections::HashSet;
 use std::io;
 use std::path::PathBuf;
 
-const ASCII_ALPHABET_LEN: u8 = 128;
-const POPULAR_ENGLISH_WORDS: &str = include_str!("../datasets/popular_english_words.txt");
-const FREQUENCY_TABLE: &str = include_str!("../datasets/ascii_char_frequencies.txt");
+/// The length of the ASCII alphabet, representing the total number of possible shift values (0-127).
+pub const ASCII_ALPHABET_LEN: u8 = 128;
+/// A static string containing a list of commonly used English words, used for dictionary attacks.
+pub const POPULAR_ENGLISH_WORDS: &str = include_str!("../datasets/popular_english_words.txt");
+/// A static string containing the frequency distribution of characters in typical English text.
+pub const FREQUENCY_TABLE: &str = include_str!("../datasets/ascii_char_frequencies.txt");
 
+/// Represents different attack methods for cracking a Caesar cipher.
 #[derive(Clone, Debug, ValueEnum)]
 pub enum Attack {
+    /// Attempts to crack the cipher by comparing decrypted text against a dictionary of valid English words.
     Dictionary,
+    /// Uses letter frequency analysis to determine the most likely decryption key.
     Frequency,
 }
 
+/// Configuration settings for the Caesar cipher cracker.
 pub struct Config {
+    /// Path to the file containing the encrypted text to be analyzed.
     pub ciphertext_file: Option<PathBuf>,
+    /// Method to use for cracking the cipher (Dictionary or Frequency analysis).
     pub attack_type: Attack,
 }
 
@@ -29,6 +69,13 @@ impl Config {
     }
 }
 
+/// Loads a predefined set of common English words into a HashSet.
+///
+/// Returns a HashSet containing popular English words that will be used
+/// for dictionary-based attack analysis.
+///
+/// The words are loaded from a static string constant, filtered to remove
+/// empty lines, and converted to owned String instances.
 fn load_dictionary() -> HashSet<String> {
     POPULAR_ENGLISH_WORDS
         .lines()
@@ -37,7 +84,18 @@ fn load_dictionary() -> HashSet<String> {
         .collect()
 }
 
-fn apply_ascii_dict_attack(ciphertext: &str, dictionary: &HashSet<String>) -> Option<u8> {
+/// Attempts to crack a Caesar cipher using dictionary-based analysis.
+///
+/// This function tries all possible shift values (0-255) and counts how many
+/// words in each decrypted attempt match words in the dictionary. The shift
+/// that produces the most dictionary matches is considered the most likely
+/// correct decryption key.
+///
+/// # Returns
+///
+/// * `Some(u8)` - The most likely shift value that produces readable text
+/// * `None` - If no meaningful matches were found in the dictionary
+pub fn apply_ascii_dict_attack(ciphertext: &str, dictionary: &HashSet<String>) -> Option<u8> {
     // Count the number of dictionary words for each shift
     let mut scores: HashMap<u8, usize> = HashMap::new();
     for shift in 0..ASCII_ALPHABET_LEN {
@@ -67,6 +125,20 @@ fn apply_ascii_dict_attack(ciphertext: &str, dictionary: &HashSet<String>) -> Op
     }
 }
 
+/// Calculates the frequency distribution of characters in the given character count map.
+///
+/// # Arguments
+///
+/// * `char_counter` - A BTreeMap containing character counts where the key is the character
+///                    and the value is the number of occurrences
+///
+/// # Returns
+///
+/// Returns a vector of f64 values representing the frequency distribution of characters.
+/// Each index corresponds to an ASCII character code, and the value represents that
+/// character's frequency as a percentage of total characters.
+///
+/// If the input map is empty, returns a vector of zeros with length ASCII_ALPHABET_LEN.
 fn get_freq_distribution(char_counter: &BTreeMap<char, u32>) -> Vec<f64> {
     if char_counter.is_empty() {
         return vec![0.0; ASCII_ALPHABET_LEN.into()];
@@ -82,7 +154,22 @@ fn get_freq_distribution(char_counter: &BTreeMap<char, u32>) -> Vec<f64> {
         .collect()
 }
 
-fn apply_ascii_freq_attack(ciphertext: &str) -> u8 {
+/// Attempts to crack a Caesar cipher using frequency analysis.
+///
+/// # Returns
+///
+/// Returns the most likely shift value (0-127) based on character frequency analysis.
+///
+/// # Algorithm
+///
+/// 1. Counts character frequencies for each possible shift (0-127)
+/// 2. Calculates frequency distribution for each shift
+/// 3. Compares each distribution against a reference frequency table of English text
+/// 4. Returns the shift value that produces the distribution closest to standard English
+///
+/// The function uses a predefined frequency table (FREQUENCY_TABLE) as reference for
+/// comparing character distributions in English text.
+pub fn apply_ascii_freq_attack(ciphertext: &str) -> u8 {
     type CharCounter = BTreeMap<char, u32>;
     type ShiftCharCounts = BTreeMap<u8, CharCounter>;
 
@@ -126,6 +213,18 @@ fn apply_ascii_freq_attack(ciphertext: &str) -> u8 {
     best_shift
 }
 
+/// Executes the cipher cracking process based on the provided configuration.
+///
+/// # Returns
+///
+/// Returns an `io::Result<()>`. Success means the analysis completed and printed results,
+/// while `Err` contains any IO errors encountered during file operations.
+///
+/// # Example Output
+///
+/// On success, prints either:
+/// - "candidate key: N" where N is the discovered shift value
+/// - "unable to find candidate key" if no viable solution was found
 pub fn run(config: &Config) -> io::Result<()> {
     let ciphertext = ccipher_io::read_input(&config.ciphertext_file)?;
     let shift = match config.attack_type {
