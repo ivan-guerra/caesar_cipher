@@ -1,9 +1,12 @@
+use clap::ValueEnum;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::fs;
 use std::io;
 use std::path::PathBuf;
 
+const POPULAR_ENGLISH_WORDS: &str = include_str!("../dictionaries/popular.txt");
+
+#[derive(Clone, Debug, ValueEnum)]
 pub enum Attack {
     Dictionary,
     Frequency,
@@ -23,14 +26,12 @@ impl Config {
     }
 }
 
-fn load_dictionary(dict_path: &PathBuf) -> io::Result<HashSet<String>> {
-    let content = fs::read_to_string(dict_path)?;
-
-    Ok(content
+fn load_dictionary() -> HashSet<String> {
+    POPULAR_ENGLISH_WORDS
         .lines()
         .filter(|line| !line.trim().is_empty())
         .map(|line| line.trim().to_string())
-        .collect())
+        .collect()
 }
 
 fn apply_ascii_dict_attack(ciphertext: &str, dictionary: &HashSet<String>) -> Option<u8> {
@@ -64,6 +65,26 @@ fn apply_ascii_dict_attack(ciphertext: &str, dictionary: &HashSet<String>) -> Op
     }
 }
 
+pub fn run(config: &Config) -> io::Result<()> {
+    let ciphertext = ccipher_io::read_input(&config.ciphertext_file)?;
+    let shift = match config.attack_type {
+        Attack::Dictionary => {
+            let dictionary = load_dictionary();
+            apply_ascii_dict_attack(&ciphertext, &dictionary)
+        }
+        Attack::Frequency => unimplemented!(),
+    };
+
+    match shift {
+        Some(shift) => {
+            println!("candidate key: {}", shift);
+        }
+        None => println!("unable to find candidate key"),
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,8 +100,7 @@ mod tests {
 
     #[test]
     fn load_dictionary_succeeds_on_valid_file() {
-        let dict_path = get_test_dictionary_path();
-        let result = load_dictionary(&dict_path).unwrap();
+        let result = load_dictionary();
 
         // Assuming the dictionary is not empty
         assert!(!result.is_empty());
@@ -94,20 +114,12 @@ mod tests {
         let dict_path = get_test_dictionary_path();
         let content = fs::read_to_string(&dict_path).unwrap();
         let total_lines = content.lines().count();
-        let result = load_dictionary(&dict_path).unwrap();
+        let result = load_dictionary();
 
         // Verify that empty lines are filtered out
         assert!(result.len() <= total_lines);
         assert!(!result.contains(""));
         assert!(!result.iter().any(|word| word.trim().is_empty()));
-    }
-
-    #[test]
-    fn load_dictionary_returns_error_on_nonexistent_file() {
-        let nonexistent = PathBuf::from("dictionaries").join("nonexistent_file.txt");
-        let result = load_dictionary(&nonexistent);
-
-        assert!(result.is_err());
     }
 
     fn create_test_dictionary() -> HashSet<String> {

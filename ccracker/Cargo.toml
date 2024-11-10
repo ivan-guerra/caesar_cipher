@@ -6,5 +6,6 @@ description = "Caesar cipher cracker."
 license = "Unlicense"
 
 [dependencies]
+clap = {version = "4.5.20", features = ["derive"]}
 ccipher_io = { path = "../ccipher_io" }
 ccipher = { path = "../ccipher" }

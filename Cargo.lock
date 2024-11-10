@@ -151,6 +151,7 @@ version = "0.1.0"
 dependencies = [
  "ccipher",
  "ccipher_io",
+ "clap",
 ]
 
 [[package]]
