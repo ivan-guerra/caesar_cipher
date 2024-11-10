@@ -148,6 +148,10 @@ dependencies = [
 [[package]]
 name = "ccracker"
 version = "0.1.0"
+dependencies = [
+ "ccipher",
+ "ccipher_io",
+]
 
 [[package]]
 name = "cfg-if"

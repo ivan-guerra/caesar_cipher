@@ -2,5 +2,9 @@
 name = "ccracker"
 version = "0.1.0"
 edition = "2021"
+description = "Caesar cipher cracker."
+license = "Unlicense"
 
 [dependencies]
+ccipher_io = { path = "../ccipher_io" }
+ccipher = { path = "../ccipher" }
